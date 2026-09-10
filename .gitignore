@@ -1,0 +1,9 @@
+.venv/
+.claude/
+__pycache__/
+*.pyc
+.env
+data/chroma/
+data/raw_docs/*.md
+!data/raw_docs/.gitkeep
+*.log

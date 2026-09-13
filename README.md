@@ -1,26 +1,35 @@
 # Gatekeeper
 
-An AI documentation assistant for FastAPI that **triages** incoming questions:
-simple ones are answered fast and cheap, complex ones are escalated to a
-larger model — the same "model cascading" pattern real companies use to keep
-AI features fast and affordable at scale.
+An AI documentation assistant covering **FastAPI and LangGraph** that
+**triages** incoming questions: a fine-tuned router decides which knowledge
+base to search and whether the question is simple enough to answer cheaply
+or needs escalation to a larger model — the same "model cascading" pattern
+real companies use to keep AI features fast and affordable at scale. When
+the answer involves code, the agent doesn't just explain it — it actually
+**executes the generated snippet** in a sandbox and fixes it if it fails,
+before ever showing it to the user.
 
 ## Why this exists
 
 Routing every question to the biggest available model is slow and expensive.
 Gatekeeper uses a small, purpose-built classifier (fine-tuned specifically for
-this) to decide, per question, whether it can be answered cheaply or needs to
-be escalated — then verifies its own answer against the retrieved source docs
-before returning it.
+this) to decide, per question, which docs to search and whether it can be
+answered cheaply or needs to be escalated — then verifies its own answer,
+running any generated code for real, before returning it.
 
 ## Architecture
 
 ```
-question -> [Router: fine-tuned small model] -> simple? -> answer directly
-                                              -> complex? -> [Retriever (RAG)] -> [Groq LLM] -> [Critic] -> answer
+question -> [Router: fine-tuned small model]
+              -> decides domain (FastAPI / LangGraph / out-of-scope)
+              -> decides complexity (simple / complex)
+           -> simple -> answer directly
+           -> complex -> [Retriever (RAG, domain-scoped)] -> [Groq LLM]
+                       -> code involved? -> [Code executor] -> fails? -> retry
+                       -> [Critic: checks answer against sources] -> answer
 ```
 
-(Diagram will be filled in as each piece is built — see `docs/architecture.md` from Day 7.)
+(Diagram will be filled in as each piece is built — see `docs/architecture.md` from Day 9.)
 
 See [LEARNING_LOG.md](LEARNING_LOG.md) for a day-by-day breakdown of what was
 built and the concepts behind it.
@@ -29,11 +38,13 @@ built and the concepts behind it.
 
 - [x] Day 1 — repo scaffold + baseline RAG (fetch docs, embed, retrieve, ask)
 - [ ] Day 2 — LangGraph orchestration
-- [ ] Day 3 — tool use + self-verification (critic loop)
-- [ ] Day 4 — fine-tuned router (LoRA)
-- [ ] Day 5 — latency/cost instrumentation
-- [ ] Day 6 — eval suite (accuracy/latency/cost comparison)
-- [ ] Day 7 — deployment + dashboard + docs
+- [ ] Day 3 — multi-domain routing (add LangGraph docs as a second corpus)
+- [ ] Day 4 — code-execution verification tool + retry loop
+- [ ] Day 5 — fine-tuned router (LoRA, 5-way classifier)
+- [ ] Day 6 — latency/cost instrumentation
+- [ ] Day 7 — eval suite (accuracy/latency/cost comparison, incl. code-correctness)
+- [ ] Day 8 — deployment + dashboard
+- [ ] Day 9 — architecture diagram, README polish, demo recording, CI
 
 ## Setup
 

@@ -9,14 +9,23 @@ comments when you want to actually understand *why*, not just *what*.
 
 ## The project, in one breath
 
-**Gatekeeper** is an AI documentation assistant for FastAPI. Instead of
-sending every question to one big, expensive, slow model, it **triages**
-each question: a small model decides if it's simple enough to answer
-cheaply, or if it needs to be escalated to a bigger model — the same
+**Gatekeeper** is an AI documentation assistant covering FastAPI and
+LangGraph. Instead of sending every question to one big, expensive, slow
+model, it **triages** each question: a fine-tuned small model decides
+*which* knowledge base to search and whether the question is simple
+enough to answer cheaply or needs escalation to a bigger model — the same
 "model cascading" pattern real companies use to keep AI products fast and
-affordable at scale. It also verifies its own answers against the source
-docs before responding, and it's benchmarked with a real eval suite
-(accuracy vs. latency vs. cost), not just vibes.
+affordable at scale. When the answer involves code, the agent doesn't
+just describe it — it actually **runs the generated snippet** in a
+sandbox and retries if it's wrong, before ever showing it to the user.
+It's benchmarked with a real eval suite (accuracy vs. latency vs. cost),
+not just vibes.
+
+*Scope note: the project started as a single-domain Q&A bot. After Day 1,
+we deliberately expanded it to add multi-domain routing and code
+execution — a single-corpus RAG chatbot is an oversaturated tutorial
+project; a router making real multi-way decisions plus an agent that
+verifies its own code is not.*
 
 **Stack:** Python, LangGraph (orchestration), Chroma (vector DB), Groq
 (free, fast LLM hosting), a self fine-tuned small model (the router),
@@ -103,20 +112,30 @@ added a verification step rather than trusting the first output."*
 - **Day 2 — LangGraph**: rebuilding this linear script as a graph with
   nodes and branching logic (Router → Retriever → Responder), so the
   system can make decisions instead of always doing the same fixed steps.
-- **Day 3 — Tools + self-verification**: giving the agent the ability to
-  call outside tools (e.g. web search), and adding the critic/verification
-  loop mentioned above.
-- **Day 4 — Fine-tuning**: LoRA fine-tuning a tiny open model (Qwen2.5-1.5B)
-  to act as the router — deciding cheaply whether a question needs the
-  big model at all.
-- **Day 5 — Instrumentation**: measuring latency (p50/p95, not just
-  average) and token cost per step of the pipeline.
-- **Day 6 — Evals**: a 40-question golden test set, scoring accuracy,
-  and a real comparison table: naive single-call baseline vs. full
-  agentic pipeline, on accuracy/latency/cost.
-- **Day 7 — Deploy**: shipping it (FastAPI + Streamlit, free hosting),
-  writing the architecture doc, wiring evals into CI so a bad change
-  can't silently ship.
+- **Day 3 — Multi-domain routing**: adding LangGraph's own docs as a
+  second corpus. The router now has to make a real multi-class decision
+  (which domain? in scope at all?), not just a yes/no.
+- **Day 4 — Code-execution verification**: when an answer includes code,
+  a tool node actually runs it in a sandboxed subprocess and, if it
+  fails, loops back so the agent can fix it before responding. This is
+  what makes it an *agent* rather than a fancy autocomplete — its output
+  changes what happens next.
+- **Day 5 — Fine-tuning**: LoRA fine-tuning a tiny open model
+  (Qwen2.5-1.5B) to act as the router — a genuine 5-way classifier
+  (2 domains × simple/complex, plus out-of-scope).
+- **Day 6 — Instrumentation**: measuring latency (p50/p95, not just
+  average) and token cost per step of the now-larger pipeline.
+- **Day 7 — Evals**: a golden test set spanning both domains, scoring
+  accuracy *and* whether generated code actually ran successfully, with
+  a real comparison table: naive single-call baseline vs. full agentic
+  pipeline, on accuracy/latency/cost.
+- **Day 8 — Deploy**: shipping it (FastAPI + Streamlit, free hosting),
+  with the dashboard showing domain routing, code-verified status, and
+  latency/cost per query.
+- **Day 9 — Polish**: architecture diagram, README pass, demo recording,
+  wiring evals into CI so a bad change can't silently ship. This is the
+  day that makes the repo look finished rather than abandoned mid-build —
+  don't skip it.
 
 ---
 

@@ -31,9 +31,6 @@ question -> [Router: fine-tuned small model]
 
 (Diagram will be filled in as each piece is built — see `docs/architecture.md` from Day 9.)
 
-See [LEARNING_LOG.md](LEARNING_LOG.md) for a day-by-day breakdown of what was
-built and the concepts behind it.
-
 ## Status
 
 - [x] Day 1 — repo scaffold + baseline RAG (fetch docs, embed, retrieve, ask)

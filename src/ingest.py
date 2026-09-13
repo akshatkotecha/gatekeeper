@@ -1,11 +1,4 @@
-"""
-Day 1 - Step 2: turn the raw docs into searchable vectors.
-
-Pipeline: read each .md file -> split into overlapping chunks -> embed each
-chunk into a vector (a list of numbers capturing its meaning) -> store in
-Chroma, a local vector database, so we can later find the chunks closest in
-meaning to a user's question.
-"""
+"""Chunks and embeds data/raw_docs into a local Chroma vector store."""
 from pathlib import Path
 
 import chromadb
@@ -15,9 +8,7 @@ RAW_DIR = Path("data/raw_docs")
 CHROMA_DIR = "data/chroma"
 COLLECTION_NAME = "fastapi_docs"
 
-# Overlap matters: without it, a sentence that gets cut in half at a chunk
-# boundary loses context. 150 chars of overlap between consecutive chunks
-# keeps that from happening.
+# overlap prevents context loss when a sentence is split across a chunk boundary
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 150
 
@@ -37,11 +28,11 @@ def ingest():
     if not md_files:
         raise SystemExit("No docs found in data/raw_docs. Run `python src/fetch_docs.py` first.")
 
-    print("Loading embedding model (runs locally, no API needed)...")
+    print("Loading embedding model...")
     model = SentenceTransformer("all-MiniLM-L6-v2")
 
     client = chromadb.PersistentClient(path=CHROMA_DIR)
-    # start clean each time this script runs, so re-ingesting doesn't duplicate chunks
+    # reset the collection so re-running this script doesn't duplicate chunks
     try:
         client.delete_collection(COLLECTION_NAME)
     except Exception:

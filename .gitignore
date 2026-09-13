@@ -7,3 +7,4 @@ data/chroma/
 data/raw_docs/*.md
 !data/raw_docs/.gitkeep
 *.log
+LEARNING_LOG.md

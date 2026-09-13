@@ -1,13 +1,4 @@
-"""
-Day 1 - Step 3: the bare-bones RAG loop, no agent framework yet.
-
-retrieve(query) -> find the chunks whose meaning is closest to the question
-ask(query)      -> stuff those chunks into a prompt and let Groq answer
-
-This is intentionally the simplest possible version: one function call, no
-routing, no verification. Day 2 rebuilds this as a LangGraph graph so you can
-feel exactly what the graph adds on top of this.
-"""
+"""Baseline RAG loop: retrieve relevant doc chunks, then answer via Groq."""
 import os
 
 import chromadb

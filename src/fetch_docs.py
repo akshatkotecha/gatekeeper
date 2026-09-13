@@ -1,9 +1,4 @@
-"""
-Day 1 - Step 1: pull FastAPI's official docs down locally.
-
-We use a sparse git clone (only the docs/en/docs folder, no full repo history)
-so this stays fast and doesn't need a GitHub API token or hit rate limits.
-"""
+"""Fetches FastAPI's documentation into data/raw_docs via a sparse git clone."""
 import os
 import shutil
 import stat
@@ -17,8 +12,7 @@ OUTPUT_DIR = Path("data/raw_docs")
 
 
 def _force_remove(func, path, exc_info):
-    # git marks its pack files read-only on Windows, which makes plain
-    # rmtree fail with PermissionError. Clear the flag and retry.
+    # Windows marks git pack files read-only, which breaks plain rmtree.
     os.chmod(path, stat.S_IWRITE)
     func(path)
 
@@ -46,7 +40,7 @@ def fetch():
     count = 0
     for md_file in src_dir.rglob("*.md"):
         rel = md_file.relative_to(src_dir)
-        # flatten subfolders into one directory, e.g. tutorial/first-steps.md -> tutorial__first-steps.md
+        # flatten subfolders: tutorial/first-steps.md -> tutorial__first-steps.md
         dest_name = str(rel).replace("/", "__").replace("\\", "__")
         dest = OUTPUT_DIR / dest_name
         dest.write_text(md_file.read_text(encoding="utf-8"), encoding="utf-8")

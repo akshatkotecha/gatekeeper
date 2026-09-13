@@ -29,7 +29,7 @@ verifies its own code is not.*
 
 **Stack:** Python, LangGraph (orchestration), Chroma (vector DB), Groq
 (free, fast LLM hosting), a self fine-tuned small model (the router),
-FastAPI (serving), Streamlit (dashboard).
+FastAPI (serving), Plotly Dash (dashboard).
 
 ---
 
@@ -129,7 +129,7 @@ added a verification step rather than trusting the first output."*
   accuracy *and* whether generated code actually ran successfully, with
   a real comparison table: naive single-call baseline vs. full agentic
   pipeline, on accuracy/latency/cost.
-- **Day 8 — Deploy**: shipping it (FastAPI + Streamlit, free hosting),
+- **Day 8 — Deploy**: shipping it (FastAPI + Plotly Dash, free hosting),
   with the dashboard showing domain routing, code-verified status, and
   latency/cost per query.
 - **Day 9 — Polish**: architecture diagram, README pass, demo recording,

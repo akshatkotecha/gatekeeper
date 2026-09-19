@@ -34,7 +34,7 @@ question -> [Router: fine-tuned small model]
 ## Status
 
 - [x] Day 1 — repo scaffold + baseline RAG (fetch docs, embed, retrieve, ask)
-- [ ] Day 2 — LangGraph orchestration
+- [x] Day 2 — LangGraph orchestration (router -> direct-answer / retrieve+respond)
 - [ ] Day 3 — multi-domain routing (add LangGraph docs as a second corpus)
 - [ ] Day 4 — code-execution verification tool + retry loop
 - [ ] Day 5 — fine-tuned router (LoRA, 5-way classifier)
